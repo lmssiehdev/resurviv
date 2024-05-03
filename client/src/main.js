@@ -664,8 +664,8 @@ class Application {
             data: "",
             gameId: 0,
             useHttps: true,
-            hosts: ["https://fly-resurviv.fly.dev"],
-            addrs: ["https://fly-resurviv.fly.dev"],
+            hosts: ["fly-resurviv.fly.dev"],
+            addrs: ["fly-resurviv.fly.dev"],
           });
           return;
         (function findGameImpl(iter, maxAttempts) {
