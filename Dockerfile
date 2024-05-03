@@ -9,6 +9,8 @@ LABEL fly_launch_runtime="NodeJS"
 # NodeJS app lives here
 WORKDIR /app
 
+RUN npm install -g pnpm
+
 # Set production environment
 ENV NODE_ENV=production
 
@@ -28,15 +30,17 @@ RUN npm install --production=false
 COPY --link . .
 
 # Remove development dependencies
-RUN npm prune --production
+RUN pnpm prune --production
 
+# Install node modules
+RUN pnpm i
 
 # Final stage for app image
 FROM base
 
 # Copy built application
 COPY --from=build /app /app
-WORKDIR /app/server/
+WORKDIR /app/server/dist
 
 # Start the server by default, this can be overwritten at runtime
-CMD [ "npm", "run", "start" ]
+CMD [ "pnpm", "run", "start" ]
