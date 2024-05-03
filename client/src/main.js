@@ -659,6 +659,15 @@ class Application {
     }
 
     findGame(matchArgs, _cb) {
+        _cb(null, {
+            zone: "",
+            data: "",
+            gameId: 0,
+            useHttps: true,
+            hosts: ["https://fly-resurviv.fly.dev"],
+            addrs: ["https://fly-resurviv.fly.dev"],
+          });
+          return;
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
                 _cb("full");
