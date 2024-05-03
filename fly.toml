@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for fly-resurviv on 2024-05-03T02:46:27+01:00
+# fly.toml app configuration file generated for fly-resurviv on 2024-05-03T03:09:31+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -20,6 +20,6 @@ primary_region = 'mad'
   processes = ['app']
 
 [[vm]]
-  memory = '1gb'
+  memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1
