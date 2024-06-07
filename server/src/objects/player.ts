@@ -26,6 +26,7 @@ import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { type Team } from "../team";
 
 export class Emote {
     playerId: number;
@@ -90,7 +91,24 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     activeIdDirty = true;
 
+    team: Team | undefined = undefined;
+
+    /**
+     * set true if any member on the team changes health or disconnects
+     */
     groupStatusDirty = false;
+
+    setGroupStatuses() {
+        const teammates = this.game.teams.get(this.teamId)!.players;
+        for (const t of teammates) {
+            t.groupStatusDirty = true;
+        }
+    }
+
+    /**
+     * for updating player and teammate locations in the minimap client UI
+     * set to true if player or teammates move (which is almost always so this is just permanently set to true)
+     */
     playerStatusDirty = false;
 
     private _health: number = GameConfig.player.health;
@@ -362,7 +380,7 @@ export class Player extends BaseGameObject {
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
 
-        this.action = { time: -1, duration: 0, targetId: -1 };
+        this.action = { time: 0, duration: 0, targetId: -1 };
     }
 
     visibleObjects = new Set<GameObject>();
@@ -419,26 +437,26 @@ export class Player extends BaseGameObject {
         if (this.actionType !== GameConfig.Action.None) {
             this.action.time += dt;
             this.action.time = math.clamp(this.action.time, 0, Constants.ActionMaxDuration);
-        }
 
-        if (this.action.time >= this.action.duration) {
-            if (this.actionType === GameConfig.Action.UseItem) {
-                const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
-                if ("heal" in itemDef) this.health += itemDef.heal;
-                if ("boost" in itemDef) this.boost += itemDef.boost;
-                this.inventory[this.actionItem]--;
-                this.inventoryDirty = true;
-            } else if (this.isReloading()) {
-                this.weaponManager.reload();
-            }
-
-            this.cancelAction();
-
-            if (
-                (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
-                this.weapons[this.curWeapIdx].ammo == 0
-            ) {
-                this.weaponManager.tryReload();
+            if (this.action.time >= this.action.duration) {
+                if (this.actionType === GameConfig.Action.UseItem) {
+                    const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
+                    if ("heal" in itemDef) this.health += itemDef.heal;
+                    if ("boost" in itemDef) this.boost += itemDef.boost;
+                    this.inventory[this.actionItem]--;
+                    this.inventoryDirty = true;
+                } else if (this.isReloading()) {
+                    this.weaponManager.reload();
+                }
+    
+                this.cancelAction();
+    
+                if (
+                    (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
+                    this.weapons[this.curWeapIdx].ammo == 0
+                ) {
+                    this.weaponManager.tryReload();
+                }
             }
         }
 
@@ -594,13 +612,7 @@ export class Player extends BaseGameObject {
         let player: Player;
         if (this.spectating == undefined) { // not spectating anyone
             player = this;
-        } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
-            player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
-            if (player === this) {
-                player = this.game.randomPlayer();
-            }
-            this.spectating = player;
-        } else { // spectating someone currently who is still alive
+        } else {
             player = this.spectating;
         }
 
@@ -678,9 +690,9 @@ export class Player extends BaseGameObject {
 
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
-        if (player.playerStatusDirty){
-            const teammates = this.game.teams.get(player.teamId)!;
-            for (const t of teammates){
+        if (player.playerStatusDirty) {
+            const teammates = this.game.teams.get(player.teamId)!.players;
+            for (let i = 0; i < teammates.length; i++) {
                 updateMsg.playerStatus.players.push({
                     hasData: true,
                     pos: player.pos,
@@ -688,18 +700,18 @@ export class Player extends BaseGameObject {
                     dead: player.dead,
                     downed: player.downed,
                     role: ""
-                })
+                });
             }
             updateMsg.playerStatusDirty = true;
         }
 
-        if (player.groupStatusDirty){
-            const teammates = this.game.teams.get(player.teamId)!;
-            for (const t of teammates){
+        if (player.groupStatusDirty) {
+            const teammates = this.game.teams.get(player.teamId)!.players;
+            for (const t of teammates) {
                 updateMsg.groupStatus.players.push({
                     health: t.health,
                     disconnected: t.disconnected
-                })
+                });
             }
             updateMsg.groupStatusDirty = true;
         }
@@ -760,25 +772,61 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
+    /** incremented when next, decremented when prev, when it reaches this.spectating.team.getAlivePlayers().length-1, switch to next team */
+    enemyTeamCycleCount = 0;
+
     /**
      * the main purpose of this function is to asynchronously set "spectating"
      * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
      */
     spectate(spectateMsg: SpectateMsg): void {
         let playerToSpec: Player | undefined;
-        if (spectateMsg.specBegin) {
-            playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
-            if (playerToSpec === this) {
-                playerToSpec = this.game.randomPlayer();
+        if (!this.game.isTeammode(this.team)){//solos
+            if (spectateMsg.specBegin) {
+                playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
+            } else if (spectateMsg.specNext && this.spectating) {
+                const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+                const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
+                playerToSpec = this.game.spectatablePlayers[newIndex];
+            } else if (spectateMsg.specPrev && this.spectating) {
+                const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+                const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
+                playerToSpec = this.game.spectatablePlayers[newIndex];
             }
-        } else if (spectateMsg.specNext && this.spectating) {
-            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
-            const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
-            playerToSpec = this.game.spectatablePlayers[newIndex];
-        } else if (spectateMsg.specPrev && this.spectating) {
-            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
-            const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
-            playerToSpec = this.game.spectatablePlayers[newIndex];
+        }else{
+            if (!this.team.allTeammatesDead(this)){//team still alive
+                if (spectateMsg.specBegin){
+                    playerToSpec = this.team.randomPlayer(this);
+                }else if (spectateMsg.specNext && this.spectating){
+                    playerToSpec = this.team.nextPlayer(this.spectating);
+                }else if (spectateMsg.specPrev && this.spectating){
+                    playerToSpec = this.team.prevPlayer(this.spectating);
+                }
+            }else{//team dead
+                let specType: Team["prevPlayer"] | Team["nextPlayer"] | undefined;
+                if (spectateMsg.specBegin){
+                    playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
+                }else if (spectateMsg.specNext && this.spectating){
+                    specType = this.spectating.team!.nextPlayer.bind(this.spectating.team);
+                    this.enemyTeamCycleCount++;
+                }else if (spectateMsg.specPrev && this.spectating){
+                    specType = this.spectating.team!.prevPlayer.bind(this.spectating.team);
+                    this.enemyTeamCycleCount--;
+                }
+
+                if (this.spectating){
+                    if (this.enemyTeamCycleCount >= this.spectating.team!.getAlivePlayers().length){
+                        playerToSpec = this.game.nextTeam(this.spectating.team!).randomPlayer();
+                        this.enemyTeamCycleCount = 0;
+                    }else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.team!.getAlivePlayers().length){
+                        playerToSpec = this.game.prevTeam(this.spectating.team!).randomPlayer();
+                        this.enemyTeamCycleCount = 0;
+                    }else if (specType){
+                        playerToSpec = specType(this.spectating);
+                    }
+                }
+            }
+            
         }
         this.spectating = playerToSpec;
     }
@@ -787,7 +835,17 @@ export class Player extends BaseGameObject {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
-        let finalDamage = params.amount;
+        // teammates can't deal damage to each other
+        if (
+            this.game.isTeammode(this.team) && 
+            params.source instanceof Player && 
+            params.source != this && 
+            this.team.isTeammate(params.source)
+        ) {
+            return;
+        }
+
+        let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
         if (params.damageType !== GameConfig.DamageType.Gas && params.damageType !== GameConfig.DamageType.Bleeding) {
@@ -820,8 +878,43 @@ export class Player extends BaseGameObject {
 
         this.health -= finalDamage;
 
+        if (this.game.isTeammode(this.team)) {
+            this.setGroupStatuses();
+        }
+
         if (this._health === 0) {
-            this.kill(params);
+            if (!this.game.isTeammode(this.team)) { // solos
+                this.kill(params);
+                return;
+            }
+
+            // teams
+            // this is very unoptimized/ugly and i just hacked it together to get all cases to trigger, definitely room for improvement by whoever reads this
+            if (this.downed) {
+                if (this.downedBy && params.source instanceof Player && this.downedBy == params.source) {
+                    this.kill(params);
+                } else if (this.downedBy && params.source instanceof Player && this.downedBy.team?.isTeammate(params.source)) {
+                    params.source = this.downedBy;
+                    this.kill(params);
+                } else if (this.downedBy && params.source instanceof Player && !this.downedBy.team?.isTeammate(params.source)) {
+                    this.kill(params);
+                } else if (this.downedBy && params.damageType == GameConfig.DamageType.Bleeding) {
+                    this.kill(params);
+                } else {
+                    this.kill(params);
+                }
+            } else {
+                if (this.team.allTeammatesDead(this)) {//includes solo duos/squads
+                    this.kill(params);
+                    this.team.allDead = true;
+                }else if (this.team.allTeammatesDowned(this)) {
+                    this.kill(params);
+                    this.team.killAllTeammates(this);
+                    this.team.allDead = true;
+                } else {
+                    this.down(params);
+                }
+            }
         }
     }
 
@@ -843,9 +936,66 @@ export class Player extends BaseGameObject {
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
     }
 
+    downedBy: Player | undefined;
+    /** downs a player */
+    down(params: DamageParams): void {
+        this.downed = true;
+        this.boost = 0;
+        this.health = 100;
+        this.actionType = this.actionSeq = 0;
+        this.animType = this.animSeq = 0;
+        this.setDirty();
+
+        this.shootHold = false;
+        this.weaponManager.clearTimeouts();
+
+        //
+        // Send downed msg
+        //
+        const downedMsg = new KillMsg();
+        downedMsg.damageType = params.damageType;
+        downedMsg.itemSourceType = params.gameSourceType ?? "";
+        downedMsg.mapSourceType = params.mapSourceType ?? "";
+        downedMsg.targetId = this.__id;
+        downedMsg.downed = true;
+
+        if (params.source instanceof Player) {
+            this.downedBy = params.source;
+            downedMsg.killerId = params.source.__id;
+            downedMsg.killCreditId = params.source.__id;
+        }
+
+        this.game.msgsToSend.push({ type: MsgType.Kill, msg: downedMsg });
+    }
+
+    private assignNewSpectate(){
+        if (this.spectatorCount == 0) return;
+
+        let player: Player;
+        if (!this.game.isTeammode(this.team)){//solo
+            player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
+        }else{
+            if (!this.team.allTeammatesDead(this)){//team alive
+                player = this.team.randomPlayer(this);
+            }else{//team dead
+                player = (
+                    this.killedBy && 
+                    this.killedBy != this &&
+                    this.team.allTeammatesDead(this) //only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                ) ? this.killedBy : this.team.randomPlayer(this.spectating);
+            }
+        }
+
+        //loop through all of this object's spectators and change who they're spectating to the new selected player
+        for (const spectator of this.spectators){
+            spectator.spectating = player;
+        }
+    }
+
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
+        if (this.downed) this.downed = false;
         this.dead = true;
         this.boost = 0;
         this.actionType = this.actionSeq = 0;
@@ -871,13 +1021,22 @@ export class Player extends BaseGameObject {
 
         if (params.source instanceof Player) {
             this.killedBy = params.source;
-            if (params.source !== this) params.source.kills++;
+            if (params.source !== this) {
+                params.source.kills++;
+            }
+
             killMsg.killerId = params.source.__id;
             killMsg.killCreditId = params.source.__id;
             killMsg.killerKills = params.source.kills;
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+
+        //
+        // Give spectators someone new to spectate
+        //
+
+        this.assignNewSpectate();
 
         //
         // Send game over message to player

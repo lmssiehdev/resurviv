@@ -22,6 +22,7 @@ import { IDAllocator } from "./IDAllocator";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 import { util } from "../../shared/utils/util";
+import { Team } from "./team";
 
 export class Game {
     started = false;
@@ -40,7 +41,7 @@ export class Game {
     livingPlayers = new Set<Player>();
     spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
 
-    teams = new Map<number, Player[]>();//team id maps to all players in that team
+    teams = new Map<number, Team>();// team id maps to all players in that team
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -152,7 +153,7 @@ export class Game {
             player.activeIdDirty = false;
 
             player.groupStatusDirty = false;
-            player.playerStatusDirty = false;
+            // player.playerStatusDirty = false;
         }
 
         this.fullObjs.clear();
@@ -182,8 +183,37 @@ export class Game {
         }
     }
 
-    randomPlayer() {
-        return this.spectatablePlayers[util.randomInt(0, this.spectatablePlayers.length - 1)];
+    /**
+     * checks teammode and asserts the passed in team object accordingly
+     * @param team team object to assert as Team if return is true
+     * @returns true if duos or squads, false if solos
+     */
+    isTeammode(team: Team | undefined): team is Team {
+        return this.teamMode != TeamMode.Solo;
+    }
+
+    nextTeam(currentTeam: Team){
+        const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDead);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
+        return aliveTeams[newIndex];
+    }
+
+    prevTeam(currentTeam: Team){
+        const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDead);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
+        return aliveTeams[newIndex];
+    }
+
+    /**
+     * 
+     * @param player optional player to exclude
+     * @returns random player
+     */
+    randomPlayer(player?: Player) {
+        const spectatablePlayers = player ? this.spectatablePlayers.filter(p => p != player) : this.spectatablePlayers;
+        return spectatablePlayers[util.randomInt(0, spectatablePlayers.length - 1)];
     }
 
     addPlayer(socketSend: (msg: ArrayBuffer | Uint8Array) => void, closeSocket: () => void): Player {
@@ -235,23 +265,26 @@ export class Game {
             const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
 
-            if (joinMsg.matchPriv){//mode is either duos or squads
+            if (joinMsg.matchPriv) { // mode is either duos or squads
                 const parsedMatchPriv: {
                     groupId: number
                     teamMode: TeamMode
                 } = JSON.parse(joinMsg.matchPriv);
-    
-                if (this.config.map != "faction"){
+
+                if (this.config.map != "faction") {
                     player.groupId = player.teamId = parsedMatchPriv.groupId;
-                    if (!this.teams.has(parsedMatchPriv.groupId)){
-                        this.teams.set(parsedMatchPriv.groupId, [player]);
-                    }else{
-                        this.teams.get(parsedMatchPriv.groupId)!.push(player);
+                    if (!this.teams.has(parsedMatchPriv.groupId)) {
+                        const team = new Team();
+                        team.add(player);
+                        this.teams.set(parsedMatchPriv.groupId, team);
+                    } else {
+                        this.teams.get(parsedMatchPriv.groupId)!.add(player);
                     }
-                    player.groupStatusDirty = true;
+                    player.team = this.teams.get(parsedMatchPriv.groupId)!;
+                    player.setGroupStatuses();
                     player.playerStatusDirty = true;
                 }
-                this.teamMode = parsedMatchPriv.teamMode;    
+                this.teamMode = parsedMatchPriv.teamMode;
             }
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
@@ -350,11 +383,9 @@ export class Game {
 
     removePlayer(player: Player): void {
         player.disconnected = true;
-        const teammates = this.teams.get(player.teamId)!;
-        teammates.forEach(t => {
-            t.groupStatusDirty = true
-            t.playerStatusDirty = true
-        });
+        if (this.teamMode != TeamMode.Solo) {
+            player.setGroupStatuses();
+        }
 
         if (!player.dead) {
             this.aliveCountDirty = true;
