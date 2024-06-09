@@ -659,6 +659,14 @@ class Application {
     }
 
     findGame(matchArgs, _cb) {
+        _cb(null, {
+          zone: "",
+          data: "",
+          gameId: 0,
+          useHttps: true,
+          hosts: ["feat-team-menu.fly.dev"],
+          addrs: ["feat-team-menu.fly.dev"],
+        });
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
                 _cb("full");
