@@ -704,14 +704,10 @@ class Application {
     }
 
     joinGame(matchData) {
-      matchData = {
-        zone: "",
-        data: "",
-        gameId: 0,
-        useHttps: true,
+      matchData = Object.assign(matchData, {
         hosts: ["feat-team-menu.fly.dev"],
         addrs: ["feat-team-menu.fly.dev"],
-      }
+      })
         if (!this.game) {
             setTimeout(() => {
                 this.joinGame(matchData);
