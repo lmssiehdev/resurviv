@@ -265,8 +265,11 @@ export class Game {
                 player.outfit = joinMsg.loadout.outfit;
             }
 
-            if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
-                player.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
+            if (isItemInLoadout(joinMsg.loadout.gun, "gun")) {
+                player.weapons[GameConfig.WeaponSlot.Primary].type = joinMsg.loadout.gun;
+            }
+            if (isItemInLoadout(joinMsg.loadout.gun2, "gun")) {
+                player.weapons[GameConfig.WeaponSlot.Secondary].type = joinMsg.loadout.gun2;
             }
 
             if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {

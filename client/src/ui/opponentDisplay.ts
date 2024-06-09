@@ -151,14 +151,14 @@ export class LoadoutDisplay {
                 scopedIn: false,
                 spectatorCountDirty: false,
                 weapsDirty: true,
-                curWeapIdx: 2,
+                curWeapIdx: 0,
                 weapons: [
                     {
-                        name: "",
+                        type: "ots38",
                         ammo: 0
                     },
                     {
-                        name: "",
+                        type: "ots38",
                         ammo: 0
                     },
                     {
@@ -260,7 +260,7 @@ export class LoadoutDisplay {
             backpack: "backpack02",
             helmet: "helmet01",
             chest: "chest03",
-            activeWeapon: this.loadout.melee,
+            activeWeapon: this.view === "gun2" ? this.loadout.gun2 : this.loadout.gun,
             layer: 0,
             dead: false,
             downed: false,
@@ -408,7 +408,7 @@ export class LoadoutDisplay {
             } else if (this.view != "emote" && this.view != "crosshair") {
                 this.animSeq = (this.animSeq + 1) % 8;
                 const options = {
-                    animType: GameConfig.Anim.Melee,
+                    animType: GameConfig.Anim.None,
                     animSeq: this.animSeq
                 };
                 this.updateCharDisplay(options);
