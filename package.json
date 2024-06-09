@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Open Source Surviv.io Server",
   "scripts": {
+    "start": "node server/src/nodeServer.js",
     "dev:server": "cd server && pnpm dev",
     "dev:client": "cd client && pnpm dev",
     "lint": "eslint . --fix --ext .ts,.js",
