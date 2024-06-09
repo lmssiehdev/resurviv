@@ -2,7 +2,7 @@ name: Fly Deploy
 on:
   push:
     branches:
-      - feat/te
+      - feat/team-menu
 jobs:
   deploy:
     name: Deploy app
