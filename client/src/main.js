@@ -704,6 +704,14 @@ class Application {
     }
 
     joinGame(matchData) {
+      matchData = {
+        zone: "",
+        data: "",
+        gameId: 0,
+        useHttps: true,
+        hosts: ["feat-team-menu.fly.dev"],
+        addrs: ["feat-team-menu.fly.dev"],
+      }
         if (!this.game) {
             setTimeout(() => {
                 this.joinGame(matchData);
@@ -714,7 +722,7 @@ class Application {
         const urls = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
-                `ws${(false || matchData.useHttps) ? "s" : ""}://feat-team-menu.fly.dev/play?gameId=${matchData.gameId}`
+                `ws${matchData.useHttps ? "s" : ""}://feat-team-menu.fly.dev/play?gameId=${matchData.gameId}`
             );
         }
         const joinGameImpl = (urls, matchData) => {
