@@ -2,7 +2,7 @@ name: Fly Deploy
 on:
   push:
     branches:
-      - feat/team-menu
+      - feat/te
 jobs:
   deploy:
     name: Deploy app
@@ -26,7 +26,7 @@ jobs:
           cache-dependency-path: "**/pnpm-lock.yaml"
 
       - name: Install Packages
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Build
         working-directory: ./server
