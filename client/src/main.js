@@ -667,6 +667,7 @@ class Application {
           hosts: ["feat-team-menu.fly.dev"],
           addrs: ["feat-team-menu.fly.dev"],
         });
+        return;
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
                 _cb("full");
