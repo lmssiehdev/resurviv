@@ -3,6 +3,6 @@ export const api = {
         return `https://feat-team-menu.fly.dev${url}`;
     },
     resolveRoomHost: function() {
-        return `https://feat-team-menu.fly.dev` ?? window.location.host;
+        return `feat-team-menu.fly.dev` ?? window.location.host;
     }
 };
