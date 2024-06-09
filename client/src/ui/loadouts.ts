@@ -9,7 +9,8 @@ export interface Loadout {
     outfit: string
     heal: string
     boost: string
-    melee: string
+    gun: string
+    gun2: string
     emotes: string[]
     crosshair: Crosshair
 }
@@ -55,7 +56,8 @@ const loadout = {
         } as Loadout;
         const validatedLoadout: Loadout = {
             outfit: getGameType("outfit", mergedLoadout.outfit, "outfitBase"),
-            melee: getGameType("melee", mergedLoadout.melee, "fists"),
+            gun: getGameType("gun", mergedLoadout.gun, "ots38"),
+            gun2: getGameType("gun", mergedLoadout.gun2, "ots38"),
             heal: getGameType("heal_effect", mergedLoadout.heal, "heal_basic"),
             boost: getGameType("boost_effect", mergedLoadout.boost, "boost_basic"),
             player_icon: getGameType("emote", mergedLoadout.player_icon, ""),

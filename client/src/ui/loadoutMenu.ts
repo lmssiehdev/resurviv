@@ -144,15 +144,20 @@ export class LoadoutMenu {
             categoryImage: "img/gui/loadout-outfit.svg"
         },
         {
-            loadoutType: "melee",
-            gameType: "melee",
-            categoryImage: "img/gui/loadout-melee.svg"
-        },
-        {
-            loadoutType: "emote",
-            gameType: "emote",
+            loadoutType: "gun",
+            gameType: "gun",
             categoryImage: "img/gui/loadout-emote.svg"
         },
+        {
+            loadoutType: "gun2",
+            gameType: "gun",
+            categoryImage: "img/gui/loadout-emote.svg"
+        },
+        // {
+        //     loadoutType: "emote",
+        //     gameType: "emote",
+        //     categoryImage: "img/gui/loadout-emote.svg"
+        // },
         {
             loadoutType: "heal",
             gameType: "heal_effect",

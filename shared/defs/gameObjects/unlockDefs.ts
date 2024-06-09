@@ -1,4 +1,5 @@
 import { CrosshairDefs } from "./crosshairDefs";
+import { GunDefs } from "./gunDefs";
 import { HealEffectDefs } from "./healEffectDefs";
 import { PassDefs } from "./passDefs";
 
@@ -208,6 +209,7 @@ export const UnlockDefs: Record<string, UnlockDef> = {
         name: "standard-issue",
         unlocks: [
             ...new Set([
+                ...Object.keys(GunDefs),
                 ...allowedOutfits,
                 ...allowedMeleeSkins,
                 ...allowedEmotes,
