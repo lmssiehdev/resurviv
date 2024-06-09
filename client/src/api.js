@@ -1,8 +1,8 @@
 export const api = {
     resolveUrl: function(url) {
-        return url;
+        return `https://feat-team-menu.fly.dev${url}`;
     },
     resolveRoomHost: function() {
-        return window.location.host;
+        return `https://feat-team-menu.fly.dev` ?? window.location.host;
     }
 };
