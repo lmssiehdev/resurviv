@@ -713,7 +713,7 @@ class Application {
         const urls = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
-                `ws${matchData.useHttps ? "s" : ""}://feat-team-menu.fly.dev/play?gameId=${matchData.gameId}`
+                `ws${(false || matchData.useHttps) ? "s" : ""}://feat-team-menu.fly.dev/play?gameId=${matchData.gameId}`
             );
         }
         const joinGameImpl = (urls, matchData) => {
