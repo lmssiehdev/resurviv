@@ -52,13 +52,15 @@ export class WeaponManager {
      * @param shouldReload will attempt automatic reload at 0 ammo if true
      * @returns
      */
-    setCurWeapIndex(idx: number, cancelAction = true): void {
+    setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
         this.player.cancelAnim();
 
-        this.player.shotSlowdownTimer = 0;
+        if (cancelSlowdown) {
+            this.player.shotSlowdownTimer = 0;
+        }
         this.bursts.length = 0;
         this.meleeAttacks.length = 0;
         this.scheduledReload = false;
@@ -85,6 +87,8 @@ export class WeaponManager {
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
+                if (GameConfig.gun.customSwitchDelay)
+                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -97,8 +101,6 @@ export class WeaponManager {
                 effectiveSwitchDelay = nextWeaponDef.switchDelay;
             }
 
-            if (GameConfig.gun.customSwitchDelay)
-                effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             nextWeapon.cooldown = effectiveSwitchDelay;
         }
 
@@ -860,7 +862,7 @@ export class WeaponManager {
             // if throwable count drops below 0
             // show the next throwable
             // if theres none switch to last weapon
-            if (this.weapons[weapSlotId].ammo == 0) {
+            if (this.player.inventory[throwableType] == 0) {
                 this.showNextThrowable();
                 if (this.weapons[weapSlotId].type === "") {
                     this.setCurWeapIndex(this.lastWeaponIdx);
