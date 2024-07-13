@@ -1,3 +1,4 @@
+import base64 from "base64-js";
 import * as PIXI from "pixi.js-legacy";
 import type { Game as ServerGame } from "../../server/src/game/game";
 import type { GameSocketData } from "../../server/src/server";
@@ -37,6 +38,7 @@ import { ProjectileBarn } from "./objects/projectile";
 import { ShotBarn } from "./objects/shot";
 import { SmokeBarn } from "./objects/smoke";
 import { Renderer } from "./renderer";
+import { replaysDB } from "./replays";
 import type { ResourceManager } from "./resources";
 import type { Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
@@ -151,12 +153,24 @@ export class Game {
         this.resourceManager = resourceManager;
     }
 
-    tryJoinGame(game: ServerGame, bots = new Set<Bot>()) {
+    tryJoinGame(game: ServerGame, bots = new Set<Bot>(), data?: string[]) {
+        const shouldReplay = data != undefined && data.length !== 0;
+
         if (!this.connecting && !this.connected && !this.initialized) {
             const This = this;
             const socketData: GameSocketData = {
                 gameID: game.id,
                 sendMsg(msg: ArrayBuffer) {
+                    if (shouldReplay) {
+                        msg = base64.toByteArray(data!.shift()!);
+
+                        if (data.length === 0) {
+                            This.onQuit();
+                        }
+                    } else {
+                        replaysDB.pushMsg(msg);
+                    }
+
                     const msgStream = new net.MsgStream(msg);
                     while (true) {
                         const type = msgStream.deserializeMsgType();
@@ -184,7 +198,15 @@ export class Game {
                         }
                     }
                 },
-                close() {}
+                close() {
+                    if (shouldReplay) return;
+                    const name = This.config.get("playerName") || "Player";
+                    const kills = This.uiManager.playerKills.text() ?? "0";
+                    replaysDB.saveCurrentRecording({
+                        name,
+                        kills
+                    });
+                }
             } as unknown as WebSocket;
 
             const joinMessage = new net.JoinMsg();

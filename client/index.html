@@ -1066,6 +1066,7 @@
             </div>
             <div class='btn-settings menu-option btn-darken btn-start-option'></div>
             <div class='btn-keybind menu-option btn-darken btn-start-option'></div>
+            <div class='btn-replay menu-option btn-darken btn-start-option'></div>
             <div id='btn-start-fullscreen' class='btn-fullscreen-toggle menu-option btn-darken btn-start-option'></div>
             <div class='btn-start-mute btn-sound-toggle menu-option btn-darken btn-start-option audio-on-icon'></div>
           </div>
@@ -1103,6 +1104,22 @@
           <div id='ui-modal-keybind-footer' class='modal-footer modal-footer-round'>
             <a class='js-btn-keybind-share btn-game-menu btn-darken' data-l10n='game-share'>Share</a>
             <a class='js-btn-keybind-restore btn-game-menu btn-darken' data-l10n='game-restore-defaults'>Restore Defaults</a>
+          </div>
+        </div>
+      </div>
+      <!-- Replay Modal -->
+      <div id='ui-modal-replay' class='ui-modal-keybind modal' oncontextmenu='return false;'>
+        <div class='ui-modal-keybind-content modal-content modal-close'>
+          <div id='ui-modal-keybind-header' class='modal-header'>
+            <span id='ui-close-keybind' class='close close-corner'></span>
+            <h2 data-l10n='index-customize-keybinds'>Replay Games</h2>
+          </div>
+          <div id='ui-modal-keybind-body' class='modal-body'>
+            <div id='ui-replay-keybind-list' class='js-replay-list'></div>
+          </div>
+          <div id='ui-modal-keybind-footer' class='modal-footer modal-footer-round'>
+            <a class='js-btn-keybind-share btn-game-menu btn-darken' data-l10n='game-share'>Clear</a>
+            <!-- <a class='js-btn-keybind-restore btn-game-menu btn-darken' data-l10n='game-restore-defaults'>Restore Defaults</a> -->
           </div>
         </div>
       </div>

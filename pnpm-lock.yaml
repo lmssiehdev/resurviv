@@ -32,6 +32,9 @@ importers:
       bit-buffer:
         specifier: ^0.2.5
         version: 0.2.5
+      dexie:
+        specifier: ^4.0.8
+        version: 4.0.8
       jquery:
         specifier: ^3.7.1
         version: 3.7.1
@@ -1614,6 +1617,9 @@ packages:
   detect-libc@2.0.3:
     resolution: {integrity: sha512-bwy0MGW55bG41VqxxypOsdSdGqLwXPI/focwgTYCFMbdUiBAxLg9CFzG08sz2aqzknwiX7Hkl0bQENjg8iLByw==}
     engines: {node: '>=8'}
+
+  dexie@4.0.8:
+    resolution: {integrity: sha512-1G6cJevS17KMDK847V3OHvK2zei899GwpDiqfEXHP1ASvme6eWJmAp9AU4s1son2TeGkWmC0g3y8ezOBPnalgQ==}
 
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
@@ -4241,6 +4247,8 @@ snapshots:
 
   detect-libc@2.0.3:
     optional: true
+
+  dexie@4.0.8: {}
 
   diff@4.0.2: {}
 

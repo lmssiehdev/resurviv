@@ -38,7 +38,7 @@ export interface MatchData {
     data: string;
 }
 
-class Application {
+export class Application {
     nameInput = $("#player-name-input-solo");
     serverSelect = $("#server-select-main");
     playMode0Btn = $("#btn-start-mode-0");
@@ -377,7 +377,7 @@ class Application {
             this.loadoutMenu.loadoutDisplay = this.loadoutDisplay;
             this.onResize();
             this.tryJoinTeam(false);
-            Menu.setupModals(this.inputBinds, this.inputBindUi);
+            Menu.setupModals(this.inputBinds, this.inputBindUi, this);
             this.onConfigModified();
             this.config.addModifiedListener(this.onConfigModified.bind(this));
             loadStaticDomImages();

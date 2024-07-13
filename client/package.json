@@ -9,6 +9,7 @@
     "@taufik-nurrohman/color-picker": "1.4.2",
     "base64-js": "^1.5.1",
     "bit-buffer": "^0.2.5",
+    "dexie": "^4.0.8",
     "jquery": "^3.7.1",
     "pixi.js-legacy": "^7.4.2"
   },

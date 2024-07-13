@@ -2,6 +2,8 @@ import $ from "jquery";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { InputBindUi, InputBinds } from "../inputBinds";
+import type { Application } from "../main";
+import { replaysDB } from "../replays";
 import { MenuModal } from "./menuModal";
 
 function createToast(
@@ -35,7 +37,7 @@ function createToast(
         }
     );
 }
-function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
+function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi, app: Application) {
     const r = $("#start-menu");
     $("#btn-help").click(() => {
         const e = $("#start-help");
@@ -167,6 +169,60 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
             inputBinds.saveBinds();
         }
         inputBindUi.refresh();
+    });
+
+    // Replay Modal
+    const replayModal = new MenuModal($("#ui-modal-replay"));
+
+    replayModal.onShow(() => {
+        startBottomRight.fadeOut(200);
+        startTopRight.fadeOut(200);
+
+        replaysDB.db.replays
+            .orderBy("date")
+            .reverse()
+            .toArray()
+            .then((recordings) => {
+                console.log({ recordings });
+                const container = $(".js-replay-list");
+                container.empty();
+
+                for (const recording of recordings) {
+                    const date = new Date(recording.date).toLocaleDateString();
+                    const text = $("<div/>", {
+                        class: "btn-keybind-display",
+                        text: `[${recording.name}] [${recording.kills} kills] - ${date}`
+                    });
+
+                    const replayGameButton = $("<a/>", {
+                        class: "btn-game-menu btn-darken btn-keybind-desc",
+                        text: "replay game"
+                    });
+
+                    app.serverGame?.stop();
+
+                    replayGameButton.on("click", () => {
+                        app.game!.tryJoinGame(app.serverGame, new Set(), recording.data);
+                    });
+
+                    container.append(
+                        $("<div/>", {
+                            class: "ui-keybind-container"
+                        })
+                            .append(text)
+                            .append(replayGameButton)
+                    );
+                }
+            });
+    });
+    replayModal.onHide(() => {
+        startBottomRight.fadeIn(200);
+        startTopRight.fadeIn(200);
+        inputBindUi.cancelBind();
+    });
+    $(".btn-replay").click(() => {
+        replayModal.show();
+        return false;
     });
 
     // Settings Modal

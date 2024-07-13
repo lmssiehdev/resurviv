@@ -1542,6 +1542,10 @@ a:active {
   width: unset !important;
 }
 
+#ui-modal-replay .ui-modal-keybind-content {
+  width: 50% !important;
+}
+
 #ui-modal-keybind-header {
   background-color: #547033;
 }
@@ -4412,6 +4416,12 @@ input [type="image"]:focus {
 
 .btn-keybind {
   background-image: url(/img/gui/keyboard.svg);
+  background-size: 44px;
+  background-position: 2px -3px;
+}
+
+.btn-replay {
+  background-image: url(/img/gui/timer.svg);
   background-size: 44px;
   background-position: 2px -3px;
 }
