@@ -118,7 +118,7 @@ export class LoadoutDisplay {
         this.loadout = loadouts.defaultLoadout();
         this.setLoadout(this.loadout);
         this.view = "outfit";
-        this.viewOld = this.view;
+        this.viewOld = this.view;   
 
         this.outfitOld = this.loadout.outfit;
 
@@ -151,13 +151,15 @@ export class LoadoutDisplay {
                 scopedIn: false,
                 spectatorCountDirty: false,
                 weapsDirty: true,
-                curWeapIdx: 2,
+                curWeapIdx: 0,
                 weapons: [
                     {
+                        name: "",
                         type: "ots38",
                         ammo: 0
                     },
                     {
+                        name: "",
                         type: "ots38",
                         ammo: 0
                     },
@@ -260,7 +262,7 @@ export class LoadoutDisplay {
             backpack: "backpack02",
             helmet: "helmet01",
             chest: "chest03",
-            activeWeapon: this.loadout.melee,
+            activeWeapon: this.view === "primary" ? this.loadout.primary : this.loadout.secondary,
             layer: 0,
             dead: false,
             downed: false,
