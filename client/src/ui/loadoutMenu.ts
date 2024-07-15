@@ -145,6 +145,16 @@ export class LoadoutMenu {
             categoryImage: "img/gui/loadout-melee.svg"
         },
         {
+            loadoutType: "gun1",
+            gameType: "gun",
+            categoryImage: "img/gui/loadout-pump.svg"
+        },
+        {
+            loadoutType: "gun2",
+            gameType: "gun",
+            categoryImage: "img/gui/loadout-ak.svg"
+        },
+        {
             loadoutType: "emote",
             gameType: "emote",
             categoryImage: "img/gui/loadout-emote.svg"

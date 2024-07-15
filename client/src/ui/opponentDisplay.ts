@@ -154,11 +154,11 @@ export class LoadoutDisplay {
                 curWeapIdx: 2,
                 weapons: [
                     {
-                        name: "",
+                        type: "ots38",
                         ammo: 0
                     },
                     {
-                        name: "",
+                        type: "ots38",
                         ammo: 0
                     },
                     {
@@ -408,7 +408,7 @@ export class LoadoutDisplay {
             } else if (this.view != "emote" && this.view != "crosshair") {
                 this.animSeq = (this.animSeq + 1) % 8;
                 const options = {
-                    animType: GameConfig.Anim.Melee,
+                    animType: GameConfig.Anim.None,
                     animSeq: this.animSeq
                 };
                 this.updateCharDisplay(options);
