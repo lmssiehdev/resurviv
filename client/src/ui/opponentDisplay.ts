@@ -155,12 +155,12 @@ export class LoadoutDisplay {
                 weapons: [
                     {
                         name: "",
-                        type: "ots38",
+                        type: "spas12",
                         ammo: 0
                     },
                     {
                         name: "",
-                        type: "ots38",
+                        type: "mosin",
                         ammo: 0
                     },
                     {
@@ -263,7 +263,7 @@ export class LoadoutDisplay {
             helmet: "helmet01",
             chest: "chest03",
             activeWeapon:
-                this.view === "primary" ? this.loadout.primary : this.loadout.secondary,
+                this.view === "secondary" ? this.loadout.secondary : this.loadout.primary,
             layer: 0,
             dead: false,
             downed: false,
