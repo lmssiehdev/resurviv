@@ -213,7 +213,7 @@ export const GameConfig = {
         falloff: true
     },
     gun: {
-        customSwitchDelay: undefined,
+        customSwitchDelay: 0.2,
         customBarrelLength: undefined,
         customShootingSpeed: {
             single: undefined,
