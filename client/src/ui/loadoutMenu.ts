@@ -147,12 +147,12 @@ export class LoadoutMenu {
         {
             loadoutType: "gun1",
             gameType: "gun",
-            categoryImage: "img/gui/loadout-pump.svg"
+            categoryImage: "img/loot/loot-weapon-m870.svg"
         },
         {
             loadoutType: "gun2",
             gameType: "gun",
-            categoryImage: "img/gui/loadout-ak.svg"
+            categoryImage: "img/loot/loot-weapon-ak.svg"
         },
         {
             loadoutType: "emote",
