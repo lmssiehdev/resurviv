@@ -80,7 +80,6 @@ export interface MapDef {
         frozenSprites?: string[];
     };
     gameMode: {
-        selectableGuns: any;
         maxPlayers: number;
         killLeaderEnabled: boolean;
         desertMode?: boolean;

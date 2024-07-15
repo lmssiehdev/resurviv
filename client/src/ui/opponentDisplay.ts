@@ -151,14 +151,16 @@ export class LoadoutDisplay {
                 scopedIn: false,
                 spectatorCountDirty: false,
                 weapsDirty: true,
-                curWeapIdx: 2,
+                curWeapIdx: 0,
                 weapons: [
                     {
-                        type: "ots38",
+                        name: "",
+                        type: "spas12",
                         ammo: 0
                     },
                     {
-                        type: "ots38",
+                        name: "",
+                        type: "mosin",
                         ammo: 0
                     },
                     {
@@ -260,7 +262,8 @@ export class LoadoutDisplay {
             backpack: "backpack02",
             helmet: "helmet01",
             chest: "chest03",
-            activeWeapon: this.loadout.melee,
+            activeWeapon:
+                this.view === "secondary" ? this.loadout.secondary : this.loadout.primary,
             layer: 0,
             dead: false,
             downed: false,
