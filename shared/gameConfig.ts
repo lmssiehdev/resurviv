@@ -29,7 +29,8 @@ export enum WeaponSlot {
     Secondary,
     Melee,
     Throwable,
-    Count
+    Count,
+    gun
 }
 
 export enum GasMode {
