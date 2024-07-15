@@ -569,12 +569,12 @@ export class Player extends BaseGameObject {
             this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
         }
 
-        if (isItemInLoadout(joinMsg.loadout.gun1, "gun")) {
-            this.weapons[GameConfig.WeaponSlot.Primary].type = joinMsg.loadout.gun1;
+        if (isItemInLoadout(joinMsg.loadout.primary, "gun")) {
+            this.weapons[GameConfig.WeaponSlot.Primary].type = joinMsg.loadout.primary;
         }
 
-        if (isItemInLoadout(joinMsg.loadout.gun2, "gun")) {
-            this.weapons[GameConfig.WeaponSlot.Secondary].type = joinMsg.loadout.gun2;
+        if (isItemInLoadout(joinMsg.loadout.secondary, "gun")) {
+            this.weapons[GameConfig.WeaponSlot.Secondary].type = joinMsg.loadout.secondary;
         }
 
         const loadout = this.loadout;
