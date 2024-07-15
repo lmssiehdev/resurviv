@@ -118,7 +118,7 @@ export class PlayerBarn {
                 }
                 break;
         }
-        
+
         const player = new Player(this.game, pos, socketData, joinMsg);
 
         if (group) {
@@ -151,21 +151,6 @@ export class PlayerBarn {
                 this.game.planeBarn.schedulePlanes();
             }
         }
-
-        player.inventory = {
-            '1xscope': 1,
-            '2xscope': 1,
-            '4xscope': 1,
-            '762mm': 300,
-            '12gauge': 90,
-            '50AE': 196,
-            '9mm': 420,
-            '556mm': 300,
-            'bandage': 30,
-            'healthkit': 4,
-            'soda': 15,
-            'painkiller': 4,
-        };
 
         return player;
     }
@@ -301,7 +286,7 @@ export class Player extends BaseGameObject {
         this.setGroupStatuses();
     }
 
-    private _boost: number = 100;
+    private _boost: number = 0;
 
     get boost(): number {
         return this._boost;
@@ -339,7 +324,7 @@ export class Player extends BaseGameObject {
 
     scopeZoomRadius: Record<string, number>;
 
-    scope = "4xscope";
+    scope = "1xscope";
 
     inventory: Record<string, number> = {};
 
@@ -412,11 +397,11 @@ export class Player extends BaseGameObject {
 
     outfit = "outfitBase";
     /** "backpack00" is no backpack, "backpack03" is the max level backpack */
-    backpack = "backpack03";
+    backpack = "backpack00";
     /** "" is no helmet, "helmet03" is the max level helmet */
-    helmet = "helmet03";
+    helmet = "";
     /** "" is no chest, "chest03" is the max level chest */
-    chest = "chest03";
+    chest = "";
 
     getGearLevel(type: string): number {
         if (!type) {
