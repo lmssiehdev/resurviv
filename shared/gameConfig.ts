@@ -212,7 +212,7 @@ export const GameConfig = {
         height: 0.25
     },
     gun: {
-        customSwitchDelay: undefined,
+        customSwitchDelay: 0.2,
         customBarrelLength: undefined,
         customShootingSpeed: {
             single: undefined,
