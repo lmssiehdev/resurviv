@@ -155,7 +155,7 @@ export class LoadoutMenu {
             categoryImage: "img/loot/loot-weapon-ak.svg"
         },
         {
-            loadoutType: "emote",       
+            loadoutType: "emote",
             gameType: "emote",
             categoryImage: "img/gui/loadout-emote.svg"
         },

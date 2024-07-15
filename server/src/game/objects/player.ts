@@ -574,7 +574,8 @@ export class Player extends BaseGameObject {
         }
 
         if (isItemInLoadout(joinMsg.loadout.secondary, "gun")) {
-            this.weapons[GameConfig.WeaponSlot.Secondary].type = joinMsg.loadout.secondary;
+            this.weapons[GameConfig.WeaponSlot.Secondary].type =
+                joinMsg.loadout.secondary;
         }
 
         const loadout = this.loadout;
