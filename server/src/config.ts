@@ -2,6 +2,7 @@ import type { MapDefs } from "../../shared/defs/mapDefs";
 import type { Vec2 } from "../../shared/utils/v2";
 import type { Game } from "./game/game";
 import type { GamePlugin } from "./game/pluginManager";
+import { DeathMatchPlugin } from "./plugins/deathmatch";
 
 export enum SpawnMode {
     Random,
@@ -26,7 +27,7 @@ export const Config = {
         { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
     ],
 
-    plugins: [],
+    plugins: [DeathMatchPlugin],
 
     regions: {
         local: {
@@ -37,7 +38,7 @@ export const Config = {
 
     defaultRegion: "local",
 
-    spawn: { mode: SpawnMode.Random },
+    spawn: { mode: SpawnMode.Center },
 
     gameTps: 100,
     netSyncTps: 33,
