@@ -5514,7 +5514,7 @@ input [type="image"]:focus {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  width: 578px;
+  width: 730px;
 }
 
 .modal-content-right {
@@ -5539,10 +5539,12 @@ input [type="image"]:focus {
 
 #modal-content-right-crosshair {
   height: 546px;
+  margin-right: -150px;
 }
 
 #modal-content-right-emote {
   height: 464px;
+  margin-right: -150px;
 }
 
 #modal-customize .modal-customize-text {
