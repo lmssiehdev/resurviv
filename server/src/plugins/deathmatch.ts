@@ -1,6 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { GameConfig, WeaponSlot } from "../../../shared/gameConfig";
+import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { math } from "../../../shared/utils/math";
 import { Events, GamePlugin } from "../game/pluginManager";
@@ -72,7 +72,7 @@ export class DeathMatchPlugin extends GamePlugin {
                     ...killer.weapons[WeaponSlot.Primary]
                 };
 
-                if ( primary.type != "" ) {
+                if (primary.type != "") {
                     const primaryGunDef = GameObjectDefs[primary.type] as GunDef;
                     killer.weapons[WeaponSlot.Primary] = {
                         ...primary,
@@ -80,24 +80,20 @@ export class DeathMatchPlugin extends GamePlugin {
                     };
                 }
 
-
                 const secondary = {
                     ...killer.weapons[WeaponSlot.Secondary]
                 };
 
-
                 if (secondary.type != "") {
-
                     const secondaryGunDef = GameObjectDefs[secondary.type] as GunDef;
 
-                killer.weapons[WeaponSlot.Secondary] = {
-                    ...secondary,
-                    ammo: calculateAmmoToGive(secondary.ammo, secondaryGunDef.maxClip)
-                };
+                    killer.weapons[WeaponSlot.Secondary] = {
+                        ...secondary,
+                        ammo: calculateAmmoToGive(secondary.ammo, secondaryGunDef.maxClip)
+                    };
+                }
 
-            }
-
-            // @TODO: add ammo to inventory 
+                // @TODO: add ammo to inventory
             }
         });
     }

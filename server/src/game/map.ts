@@ -374,7 +374,7 @@ export class GameMap {
         // Generate rivers
         //
 
-        if ( !mapConfig.rivers.weights.length ) return;
+        if (!mapConfig.rivers.weights.length) return;
         const widths = util.weightedRandom(mapConfig.rivers.weights).widths;
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
