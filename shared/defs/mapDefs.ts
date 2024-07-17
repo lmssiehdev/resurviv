@@ -1,5 +1,5 @@
 import type { Vec2 } from "../utils/v2";
-import { Main } from "./maps/baseDefs";
+import { NamerioMain } from "./maps/namerio/mainDef";
 import { Cobalt } from "./maps/cobaltDefs";
 import { Desert } from "./maps/desertDefs";
 import { Faction } from "./maps/factionDefs";
@@ -17,7 +17,7 @@ import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 
 export const MapDefs = {
-    main: Main,
+    main: NamerioMain,
     main_spring: MainSpring,
     main_summer: MainSummer,
     desert: Desert,
