@@ -571,12 +571,18 @@ export class Player extends BaseGameObject {
         }
 
         if (isItemInLoadout(joinMsg.loadout.primary, "gun")) {
-            this.weapons[GameConfig.WeaponSlot.Primary].type = joinMsg.loadout.primary;
+            const slot = GameConfig.WeaponSlot.Primary;
+            this.weapons[slot].type = joinMsg.loadout.primary;
+            const gunDef = (GameObjectDefs[this.weapons[slot].type] as GunDef);
+            this.weapons[slot].ammo = gunDef.maxClip
         }
 
         if (isItemInLoadout(joinMsg.loadout.secondary, "gun")) {
-            this.weapons[GameConfig.WeaponSlot.Secondary].type =
+            const slot = GameConfig.WeaponSlot.Secondary;
+            this.weapons[slot].type =
                 joinMsg.loadout.secondary;
+            const gunDef = (GameObjectDefs[this.weapons[slot].type] as GunDef)
+            this.weapons[slot].ammo = gunDef.maxClip
         }
 
         const loadout = this.loadout;
