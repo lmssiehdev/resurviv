@@ -21,9 +21,6 @@
     #modal-content-right-emote {                
         margin-right: -83px !important;
     }
-}
-
-/* @TODO: merge these upstream          */
+/* Combined changes */
 #team-menu-members {
     height: auto !important;
-}
