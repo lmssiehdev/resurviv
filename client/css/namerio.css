@@ -22,3 +22,8 @@
         margin-right: -83px !important;
     }
 }
+
+/* @TODO: merge these upstream          */
+#team-menu-members {
+    height: auto !important;
+}
