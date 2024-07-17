@@ -11,7 +11,7 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import type { Building } from "./building";
 import { BaseGameObject, type DamageParams } from "./gameObject";
-import type { Player } from "./player";
+import { Player } from "./player";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
@@ -307,7 +307,18 @@ export class Obstacle extends BaseGameObject {
             v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
         }
 
-        for (const lootTierOrItem of def.loot) {
+        const loot = [...def.loot];
+
+        if (params.source instanceof Player && params.source.hasPerk("scavenger")) {
+            loot.push({
+                tier: "tier_world",
+                min: 1,
+                max: 1,
+                props: {}
+            });
+        }
+
+        for (const lootTierOrItem of loot) {
             if ("tier" in lootTierOrItem) {
                 const count = util.randomInt(lootTierOrItem.min!, lootTierOrItem.max!);
 

@@ -324,7 +324,7 @@ export class TeamMenu {
     }
 
     tryStartGame() {
-        if (this.isLeader && !this.roomData.findingGame) {
+        if (!this.roomData.findingGame) {
             const version = GameConfig.protocolVersion;
             let region = this.roomData.region;
             const paramRegion = helpers.getParameterByName("region");
@@ -477,7 +477,7 @@ export class TeamMenu {
                     )}<span> ...</span>`
                 );
 
-                const showWaitMessage = playersInGame && !this.joiningGame;
+                const showWaitMessage = false ?? (playersInGame && !this.joiningGame);
                 waitReason.css("display", showWaitMessage ? "block" : "none");
                 this.playBtn.css("display", showWaitMessage ? "none" : "block");
             } else {
@@ -501,7 +501,7 @@ export class TeamMenu {
                     );
                 }
                 waitReason.css("display", "block");
-                this.playBtn.css("display", "none");
+                // this.playBtn.css("display", "none");
             }
 
             // Player properties

@@ -3,7 +3,6 @@ import { URLSearchParams } from "url";
 import NanoTimer from "nanotimer";
 import { App, SSLApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
-import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
@@ -105,7 +104,7 @@ export class Server {
         return { err: "" };
     }
 
-    findGame(body: FindGameBody) {
+    findGame(body: FindGameBody, groupGameId?: string) {
         let response:
             | {
                   zone: string;
@@ -158,7 +157,8 @@ export class Server {
                 response.gameId = game.id;
 
                 const mode = Config.modes[body.gameModeIdx];
-                if (mode.teamMode > 1) {
+
+                if (mode.teamMode > 1 && game.id !== groupGameId!) {
                     let group: Group | undefined;
 
                     if (body.autoFill) {
@@ -225,9 +225,10 @@ export class Server {
         if (game === undefined || player === undefined) return;
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
-        if (player.timeAlive < GameConfig.player.minActiveTime) {
-            player.game.playerBarn.removePlayer(player);
-        }
+        // @NOTE: we remove the player anytime he leaves
+        // if (player.timeAlive < GameConfig.player.minActiveTime) {
+        player.game.playerBarn.removePlayer(player);
+        // }
     }
 }
 

@@ -209,7 +209,8 @@ export const GameConfig = {
     bullet: {
         maxReflect: 3,
         reflectDistDecay: 1.5,
-        height: 0.25
+        height: 0.25,
+        falloff: true
     },
     gun: {
         customSwitchDelay: 0.2,
