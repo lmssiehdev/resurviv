@@ -1,6 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { GameConfig, WeaponSlot } from "../../../shared/gameConfig";
+import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { math } from "../../../shared/utils/math";
 import { Events, GamePlugin } from "../game/pluginManager";
@@ -71,35 +71,29 @@ export class DeathMatchPlugin extends GamePlugin {
                 const primary = {
                     ...killer.weapons[WeaponSlot.Primary]
                 };
+
+                if (primary.type != "") {
+                    const primaryGunDef = GameObjectDefs[primary.type] as GunDef;
+                    killer.weapons[WeaponSlot.Primary] = {
+                        ...primary,
+                        ammo: calculateAmmoToGive(primary.ammo, primaryGunDef.maxClip)
+                    };
+                }
+
                 const secondary = {
                     ...killer.weapons[WeaponSlot.Secondary]
                 };
 
-                const primaryGunDef = GameObjectDefs[primary.type] as GunDef;
+                if (secondary.type != "") {
+                    const secondaryGunDef = GameObjectDefs[secondary.type] as GunDef;
 
-                const secondaryGunDef = GameObjectDefs[secondary.type] as GunDef;
+                    killer.weapons[WeaponSlot.Secondary] = {
+                        ...secondary,
+                        ammo: calculateAmmoToGive(secondary.ammo, secondaryGunDef.maxClip)
+                    };
+                }
 
-                killer.weapons[WeaponSlot.Primary] = {
-                    ...primary,
-                    ammo: calculateAmmoToGive(primary.ammo, primaryGunDef.maxClip)
-                };
-                killer.weapons[WeaponSlot.Secondary] = {
-                    ...secondary,
-                    ammo: calculateAmmoToGive(secondary.ammo, secondaryGunDef.maxClip)
-                };
-
-                // const bagLevel = killer.getGearLevel("backpack");
-                // const bagSizes = GameConfig.bagSizes;
-                // killer.inventory[primaryGunDef.ammo] = calculateAmmoToGive(
-                //     killer.inventory[primaryGunDef.ammo],
-                //     bagSizes[primaryGunDef.ammo][bagLevel],
-                //     20
-                // );
-                // killer.inventory[secondaryGunDef.ammo] = calculateAmmoToGive(
-                //     killer.inventory[secondaryGunDef.ammo],
-                //     bagSizes[secondaryGunDef.ammo][bagLevel],
-                //     20
-                // );
+                // @TODO: add ammo to inventory
             }
         });
     }

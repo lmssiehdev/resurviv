@@ -374,6 +374,7 @@ export class GameMap {
         // Generate rivers
         //
 
+        if (!mapConfig.rivers.weights.length) return;
         const widths = util.weightedRandom(mapConfig.rivers.weights).widths;
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
@@ -610,11 +611,11 @@ export class GameMap {
             if (def.terrain?.waterEdge) {
                 this.genOnWaterEdge(type);
             } else if (def.terrain?.river) {
-                this.genOnRiver(type);
+                // this.genOnRiver(type);
             } else if (def.terrain?.bridge) {
-                this.genBridge(type);
+                // this.genBridge(type);
             } else if (def.terrain?.lakeCenter) {
-                this.genOnLakeCenter(type);
+                // this.genOnLakeCenter(type);
             } else if (def.terrain?.grass) {
                 this.genOnGrass(type);
             } else if (def.terrain?.beach) {

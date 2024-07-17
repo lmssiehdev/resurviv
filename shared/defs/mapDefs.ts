@@ -1,11 +1,11 @@
 import type { Vec2 } from "../utils/v2";
-import { Main } from "./maps/baseDefs";
 import { Cobalt } from "./maps/cobaltDefs";
 import { Desert } from "./maps/desertDefs";
 import { Faction } from "./maps/factionDefs";
 import { Halloween } from "./maps/halloweenDefs";
 import { MainSpring } from "./maps/mainSpringDefs";
 import { MainSummer } from "./maps/mainSummerDefs";
+import { NamerioMain } from "./maps/namerio/mainDef";
 import { Potato } from "./maps/potatoDefs";
 import { PotatoSpring } from "./maps/potatoSpringDefs";
 import { Savannah } from "./maps/savannahDefs";
@@ -17,7 +17,7 @@ import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 
 export const MapDefs = {
-    main: Main,
+    main: NamerioMain,
     main_spring: MainSpring,
     main_summer: MainSummer,
     desert: Desert,
