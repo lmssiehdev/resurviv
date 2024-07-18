@@ -130,7 +130,8 @@ export class TeamMenu {
     modifyRoom(newRoomData: RoomData, room: Room): void {
         room.roomData.gameModeIdx = newRoomData.gameModeIdx;
         room.roomData.maxPlayers = math.clamp(room.roomData.gameModeIdx * 2, 2, 4);
-        room.roomData.autoFill = newRoomData.autoFill;
+        // @NOTE: disabled autofill from team cuz it was causing error on independent joins
+        room.roomData.autoFill = false ?? newRoomData.autoFill;
         room.roomData.region = newRoomData.region;
     }
 
