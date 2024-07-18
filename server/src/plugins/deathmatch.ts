@@ -1,6 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { WeaponSlot } from "../../../shared/gameConfig";
+import { GameConfig, WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { math } from "../../../shared/utils/math";
 import { Events, GamePlugin } from "../game/pluginManager";
@@ -10,21 +10,25 @@ export class DeathMatchPlugin extends GamePlugin {
         this.on(Events.Game_Created, (_data) => {});
 
         this.on(Events.Player_Join, (data) => {
+            data.addPerk("takedown");
+            data.addPerk("endless_ammo");
             data.boost = 100;
-            data.inventory = {
-                "1xscope": 1,
-                "2xscope": 1,
-                "4xscope": 1,
-                "762mm": 300,
-                "12gauge": 90,
-                "50AE": 196,
-                "9mm": 420,
-                "556mm": 300,
-                bandage: 30,
-                healthkit: 4,
-                soda: 15,
-                painkiller: 4
-            };
+
+            const backpackLvl = data.getGearLevel(data.backpack);
+            const bagsizes = GameConfig.bagSizes;
+
+            [
+                "bandage",
+                "healthkit",
+                "soda",
+                "painkiller",
+                "4xscope",
+                "2xscope",
+                "1xscope"
+            ].forEach((item) => {
+                data.inventory[item] = bagsizes[item][backpackLvl];
+            });
+
             data.scope = "4xscope";
             data.backpack = "backpack03";
             data.helmet = "helmet03";
