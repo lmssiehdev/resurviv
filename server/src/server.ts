@@ -8,7 +8,7 @@ import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
 import type { Player } from "./game/objects/player";
-import { TeamMenu } from "./teamMenu";
+import { type Room, TeamMenu } from "./teamMenu";
 import { Logger } from "./utils/logger";
 import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
@@ -105,7 +105,7 @@ export class Server {
         return { err: "" };
     }
 
-    findGame(body: FindGameBody, groupGameId?: string) {
+    findGame(body: FindGameBody, room?: Room) {
         let response:
             | {
                   zone: string;
@@ -159,21 +159,33 @@ export class Server {
 
                 const mode = Config.modes[body.gameModeIdx];
 
-                if (mode.teamMode > 1 && game.id !== groupGameId!) {
+                if (mode.teamMode > 1) {
                     let group: Group | undefined;
 
-                    if (body.autoFill) {
-                        group = [...game.groups.values()].filter((group) => {
+                    if (body.autoFill && !room?.groupHash) {
+                        const groups = [...game.groups.values()].filter((group) => {
+                            if (game.groups.size < 2) group.autoFill = false;
                             return group.autoFill && group.players.length < mode.teamMode;
-                        })[0];
+                        });
+                        group = groups[Math.floor(Math.random() * groups.length)];
                     }
 
-                    if (!group) {
-                        group = game.addGroup(randomBytes(20).toString("hex"), true);
-                    }
+                    if (room?.groupHash) {
+                        response.data = room.groupHash;
+                    } else {
+                        if (!group) {
+                            group = game.addGroup(
+                                randomBytes(20).toString("hex"),
+                                body.autoFill
+                            );
+                        }
 
-                    if (group) {
-                        response.data = group.hash;
+                        if (group) {
+                            response.data = group.hash;
+                        }
+                    }
+                    if (room) {
+                        room!.groupHash = response.data;
                     }
                 }
             }

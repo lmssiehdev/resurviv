@@ -17,7 +17,7 @@ interface RoomPlayer extends TeamMenuPlayer {
 export interface Room {
     roomData: RoomData;
     players: RoomPlayer[];
-    data?: string;
+    groupHash?: string;
     gameId?: string;
 }
 
@@ -322,7 +322,7 @@ export class TeamMenu {
                         autoFill: room.roomData.autoFill,
                         playerCount: room.players.length
                     },
-                    room.gameId
+                    room
                 ).res[0];
 
                 if ("err" in playData) {
@@ -338,23 +338,11 @@ export class TeamMenu {
                     return;
                 }
 
-                if (!room.gameId || room.gameId != playData.gameId) {
-                    room.gameId = playData.gameId;
-                    room.data = undefined;
-                }
-
-                if (!room.data) {
-                    room.data = playData.data;
-                }
-
-                {
-                    console.log(room.data, playData.gameId);
-                }
                 response = {
                     type: "joinGame",
                     data: {
                         ...playData,
-                        data: room.data ?? playData.data
+                        data: playData.data
                     }
                 };
                 // this.sendResponses(response, room.players);
