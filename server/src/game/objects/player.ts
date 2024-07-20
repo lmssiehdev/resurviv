@@ -2434,6 +2434,7 @@ export class Player extends BaseGameObject {
             }
             case "scope": {
                 if (itemDef.level === 1) break;
+                if (!this.inventory[dropMsg.item]) return;
                 const scopeLevel = `${itemDef.level}xscope`;
                 const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
 
@@ -2461,7 +2462,8 @@ export class Player extends BaseGameObject {
             }
             case "chest":
             case "helmet": {
-                if (itemDef.noDrop) break;
+                if (itemDef.noDrop) return;
+                if (!this[itemDef.type]) return;
                 this.game.lootBarn.addLoot(
                     dropMsg.item,
                     this.pos,

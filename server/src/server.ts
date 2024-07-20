@@ -170,6 +170,7 @@ export class Server {
                         group = groups[Math.floor(Math.random() * groups.length)];
                     }
 
+
                     if (room?.groupHash) {
                         response.data = room.groupHash;
                     } else {
@@ -179,6 +180,14 @@ export class Server {
                                 body.autoFill
                             );
                         }
+
+                    if (!group) {
+                        group = game.addGroup(
+                            randomBytes(20).toString("hex"),
+                            body.autoFill
+                        );
+                    }
+
 
                         if (group) {
                             response.data = group.hash;
