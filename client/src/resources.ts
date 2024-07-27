@@ -3,8 +3,10 @@ import { type Atlas, MapDefs } from "../../shared/defs/mapDefs";
 import type { AudioManager } from "./audioManager";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
-import fullResAtlasDefs from "./fullResAtlasDefs.json";
-import lowResAtlasDefs from "./lowResAtlasDefs.json";
+// import fullResAtlasDefs from "./fullResAtlasDefs.json";
+// import lowResAtlasDefs from "./lowResAtlasDefs.json";
+import { atlases as fullResAtlasDefs } from "virtual:spritesheets-jsons-high-res";
+import { atlases as lowResAtlasDefs } from "virtual:spritesheets-jsons-low-res";
 import SoundDefs from "./soundDefs";
 
 type AtlasDef = Record<Atlas, PIXI.ISpritesheetData[]>;

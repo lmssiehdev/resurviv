@@ -1,6 +1,7 @@
 import { type ProxyOptions, defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { Config } from "../server/src/config";
+import { spritesheet } from "./vite/vite-spritesheet-plugin/spritesheet-plugin"
 
 const proxyConfig: Record<string, ProxyOptions> = {
     "/api": {
@@ -52,6 +53,7 @@ export default defineConfig(() => {
             extensions: [".js", ".ts"]
         },
         plugins: [
+            spritesheet(),
             VitePWA({
                 registerType: "autoUpdate",
                 includeAssets: ["favicon.ico", "img/apple-touch-icon-180x180.png"],
