@@ -1,10 +1,15 @@
+import { resolve } from "path";
 import { watch } from "chokidar";
 import { Minimatch } from "minimatch";
-import { resolve } from "path";
-import { type ISpritesheetData } from "pixi.js-legacy";
-import { type FSWatcher, type Plugin, type ResolvedConfig } from "vite";
+import type { ISpritesheetData } from "pixi.js-legacy";
+import type { FSWatcher, Plugin, ResolvedConfig } from "vite";
 import readDirectory from "./utils/readDirectory.js";
-import { type CompilerOptions, createSpritesheets, type MultiResAtlasList } from "./utils/spritesheet.js";
+import {
+    type CompilerOptions,
+    type MultiResAtlasList,
+    createSpritesheets
+} from "./utils/spritesheet.js";
+import { trimImages } from "./utils/trimFiles";
 
 const defaultGlob = "**/*.{png,gif,jpg,bmp,tiff,svg}";
 const imagesMatcher = new Minimatch(defaultGlob);
@@ -35,11 +40,18 @@ async function buildSpritesheets(): Promise<MultiResAtlasList> {
     const atlases: MultiResAtlasList = {};
 
     for (const atlasId in atlasesToBuild) {
-        const files: string[] = readDirectory(atlasesToBuild[atlasId]).filter(x => imagesMatcher.match(x));
-        atlases[atlasId] = await createSpritesheets(files, {
-            ...compilerOpts,
-            name: atlasId
-        });
+        const files: string[] = readDirectory(atlasesToBuild[atlasId]).filter((x) =>
+            imagesMatcher.match(x)
+        );
+        const { trimmedFiles, trimmedSizes } = await trimImages(files);
+        atlases[atlasId] = await createSpritesheets(
+            files,
+            {
+                ...compilerOpts,
+                name: atlasId
+            },
+            trimmedSizes
+        );
     }
 
     return atlases;
@@ -53,8 +65,10 @@ const lowResResolvedVirtualModuleId = `\0${lowResVirtualModuleId}`;
 
 const resolveId = (id: string): string | undefined => {
     switch (id) {
-        case highResVirtualModuleId: return highResResolvedVirtualModuleId;
-        case lowResVirtualModuleId: return lowResResolvedVirtualModuleId;
+        case highResVirtualModuleId:
+            return highResResolvedVirtualModuleId;
+        case lowResVirtualModuleId:
+            return lowResResolvedVirtualModuleId;
     }
 };
 
@@ -65,8 +79,8 @@ export function spritesheet(): Plugin[] {
     let atlases: MultiResAtlasList = {};
 
     const exportedAtlases: {
-        readonly low: Record<string, readonly ISpritesheetData[]>
-        readonly high: Record<string, readonly ISpritesheetData[]>
+        readonly low: Record<string, readonly ISpritesheetData[]>;
+        readonly high: Record<string, readonly ISpritesheetData[]>;
     } = {
         low: {},
         high: {}
@@ -74,8 +88,10 @@ export function spritesheet(): Plugin[] {
 
     const load = (id: string): string | undefined => {
         switch (id) {
-            case highResResolvedVirtualModuleId: return `export const atlases = JSON.parse('${JSON.stringify(exportedAtlases.high)}')`;
-            case lowResResolvedVirtualModuleId: return `export const atlases = JSON.parse('${JSON.stringify(exportedAtlases.low)}')`;
+            case highResResolvedVirtualModuleId:
+                return `export const atlases = JSON.parse('${JSON.stringify(exportedAtlases.high)}')`;
+            case lowResResolvedVirtualModuleId:
+                return `export const atlases = JSON.parse('${JSON.stringify(exportedAtlases.low)}')`;
         }
     };
 
@@ -90,8 +106,12 @@ export function spritesheet(): Plugin[] {
                 atlases = await buildSpritesheets();
 
                 for (const atlasId in atlases) {
-                    exportedAtlases.high[atlasId] = atlases[atlasId].high.map(sheet => sheet.json);
-                    exportedAtlases.low[atlasId] = atlases[atlasId].low.map(sheet => sheet.json);
+                    exportedAtlases.high[atlasId] = atlases[atlasId].high.map(
+                        (sheet) => sheet.json
+                    );
+                    exportedAtlases.low[atlasId] = atlases[atlasId].low.map(
+                        (sheet) => sheet.json
+                    );
                 }
             },
             generateBundle() {
@@ -123,19 +143,32 @@ export function spritesheet(): Plugin[] {
                     buildTimeout = setTimeout(() => {
                         config.logger.info("Rebuilding spritesheets");
 
-                        buildSheets().then(() => {
-                            const module = server.moduleGraph.getModuleById(highResVirtualModuleId);
-                            if (module !== undefined) void server.reloadModule(module);
-                            const module2 = server.moduleGraph.getModuleById(lowResVirtualModuleId);
-                            if (module2 !== undefined) void server.reloadModule(module2);
-                        }).catch(e => console.error(e));
+                        buildSheets()
+                            .then(() => {
+                                const module =
+                                    server.moduleGraph.getModuleById(
+                                        highResVirtualModuleId
+                                    );
+                                if (module !== undefined)
+                                    void server.reloadModule(module);
+                                const module2 =
+                                    server.moduleGraph.getModuleById(
+                                        lowResVirtualModuleId
+                                    );
+                                if (module2 !== undefined)
+                                    void server.reloadModule(module2);
+                            })
+                            .catch((e) => console.error(e));
                     }, 500);
                 }
 
-                watcher = watch(foldersToWatch.map(pattern => resolve(pattern, defaultGlob)), {
-                    cwd: config.root,
-                    ignoreInitial: true
-                })
+                watcher = watch(
+                    foldersToWatch.map((pattern) => resolve(pattern, defaultGlob)),
+                    {
+                        cwd: config.root,
+                        ignoreInitial: true
+                    }
+                )
                     .on("add", reloadPage)
                     .on("change", reloadPage)
                     .on("unlink", reloadPage);
@@ -147,8 +180,8 @@ export function spritesheet(): Plugin[] {
 
                     const { low, high } = exportedAtlases;
                     for (const atlasId in atlases) {
-                        high[atlasId] = atlases[atlasId].high.map(sheet => sheet.json);
-                        low[atlasId] = atlases[atlasId].low.map(sheet => sheet.json);
+                        high[atlasId] = atlases[atlasId].high.map((sheet) => sheet.json);
+                        low[atlasId] = atlases[atlasId].low.map((sheet) => sheet.json);
                     }
 
                     files.clear();

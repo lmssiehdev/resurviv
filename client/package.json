@@ -1,9 +1,11 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "tsc --noEmit && vite build",
     "dev": "vite dev",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "spritesheet": "spritesheet-js /public/img/*.svg"
   },
   "dependencies": {
     "@taufik-nurrohman/color-picker": "1.4.2",
@@ -14,6 +16,10 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.30",
+    "canvas": "^2.11.2",
+    "chokidar": "^3.6.0",
+    "maxrects-packer": "^2.7.3",
+    "minimatch": "^10.0.1",
     "vite": "^5.3.3",
     "vite-plugin-pwa": "^0.20.0"
   }
