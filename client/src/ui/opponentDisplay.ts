@@ -63,7 +63,7 @@ export class LoadoutDisplay {
         public config: ConfigManager,
         public inputBinds: InputBinds,
         public account: Account
-    ) { }
+    ) {}
 
     init() {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
@@ -386,9 +386,9 @@ export class LoadoutDisplay {
             (this.view == this.viewOld ||
                 (this.view != "heal" && this.view != "boost") ||
                 (this.animIdleTicker = 0),
-                (this.viewOld = this.view),
-                (this.animIdleTicker -= dt),
-                this.animIdleTicker < 0)
+            (this.viewOld = this.view),
+            (this.animIdleTicker -= dt),
+            this.animIdleTicker < 0)
         ) {
             if (this.view == "heal") {
                 this.actionSeq = (this.actionSeq + 1) % 8;
