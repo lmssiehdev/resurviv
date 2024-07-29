@@ -1,4 +1,5 @@
 import { defineSkin } from "../../utils/util";
+import { Vec2 } from "../../utils/v2";
 
 export interface OutfitDef {
     readonly type: "outfit";
@@ -31,6 +32,11 @@ export interface OutfitDef {
     obstacleType?: string;
     baseScale?: number;
     ghillie?: boolean;
+    accessory?: {
+        sprite: string;
+        anchor: Vec2;
+        topUI?: number;
+    };
 }
 
 function defineOutfitSkin(baseType: string, params: any) {

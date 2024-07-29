@@ -54,7 +54,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: Server) {}
+    constructor(public server: Server) { }
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
         const enabledGameModeIdxs = Config.modes

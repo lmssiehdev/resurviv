@@ -1,6 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { GameConfig, WeaponSlot } from "../../../shared/gameConfig";
+import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { math } from "../../../shared/utils/math";
 import { Events, GamePlugin } from "../game/pluginManager";
@@ -10,29 +10,8 @@ export default class DeathMatchPlugin extends GamePlugin {
         this.on(Events.Game_Created, (_data) => {});
 
         this.on(Events.Player_Join, (data) => {
-            data.addPerk("takedown");
-            data.addPerk("endless_ammo");
             data.boost = 100;
-
-            const backpackLvl = data.getGearLevel(data.backpack);
-            const bagsizes = GameConfig.bagSizes;
-
-            [
-                "bandage",
-                "healthkit",
-                "soda",
-                "painkiller",
-                "4xscope",
-                "2xscope",
-                "1xscope"
-            ].forEach((item) => {
-                data.inventory[item] = bagsizes[item][backpackLvl];
-            });
-
-            data.scope = "4xscope";
-            data.backpack = "backpack03";
-            data.helmet = "helmet03";
-            data.chest = "chest03";
+            data.weaponManager.setCurWeapIndex(WeaponSlot.Primary);
         });
 
         this.on(Events.Player_Kill, (data) => {
