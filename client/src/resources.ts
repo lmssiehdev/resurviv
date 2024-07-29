@@ -3,15 +3,16 @@ import { type Atlas, MapDefs } from "../../shared/defs/mapDefs";
 import type { AudioManager } from "./audioManager";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
-import fullResAtlasDefs from "./fullResAtlasDefs.json";
-import lowResAtlasDefs from "./lowResAtlasDefs.json";
+// import fullResAtlasDefs from "./fullResAtlasDefs.json";
+// import lowResAtlasDefs from "./lowResAtlasDefs.json";
+import kongDefs from "./kongDefs.json";
 import SoundDefs from "./soundDefs";
 
 type AtlasDef = Record<Atlas, PIXI.ISpritesheetData[]>;
 
 const spritesheetDefs = {
-    low: lowResAtlasDefs as unknown as AtlasDef,
-    high: fullResAtlasDefs as unknown as AtlasDef
+    low: kongDefs as unknown as AtlasDef,
+    high: kongDefs as unknown as AtlasDef
 };
 
 function loadTexture(renderer: PIXI.IRenderer, url: string) {
@@ -44,7 +45,7 @@ function loadTexture(renderer: PIXI.IRenderer, url: string) {
 }
 
 function loadSpritesheet(renderer: PIXI.IRenderer, data: PIXI.ISpritesheetData) {
-    const baseTex = loadTexture(renderer, `assets/${data.meta.image}`);
+    const baseTex = loadTexture(renderer, `kong_assets/${data.meta.image}`);
 
     const sheet = new PIXI.Spritesheet(baseTex, data);
     sheet.resolution = baseTex.resolution;
@@ -177,7 +178,9 @@ export class ResourceManager {
         //
         // Textures
         //
-        const atlasList = mapDef.assets.atlases;
+        const atlasList =
+            ["main", "shared", "loadout", "loadout2", "gradient"] ??
+            mapDef.assets.atlases;
 
         // Unload all atlases that aren't in the new list
         const keys = Object.keys(this.atlases) as Atlas[];
