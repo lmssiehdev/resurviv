@@ -187,6 +187,7 @@ export class Player implements AbstractObject {
     active!: boolean;
 
     bodySprite = createSprite();
+    accessorySprite = createSprite();
     chestSprite = createSprite();
     flakSprite = createSprite();
     steelskinSprite = createSprite();
@@ -411,6 +412,7 @@ export class Player implements AbstractObject {
         this.bodyContainer.addChild(this.handLContainer);
         this.bodyContainer.addChild(this.handRContainer);
         this.bodyContainer.addChild(this.visorSprite);
+        this.bodyContainer.addChild(this.accessorySprite);
         this.bodyContainer.addChild(this.helmetSprite);
 
         this.container.addChild(this.bodyContainer);
@@ -1309,6 +1311,17 @@ export class Player implements AbstractObject {
             : outfitImg.baseTint;
         this.bodySprite.scale.set(0.25, 0.25);
         this.bodySprite.visible = true;
+
+        if (outfitDef.accessory != undefined) {
+            console.log(outfitDef);
+            this.accessorySprite.texture = PIXI.Texture.from(outfitDef.accessory.sprite);
+            this.accessorySprite.anchor.set(
+                outfitDef.accessory.anchor.x,
+                outfitDef.accessory.anchor.y
+            );
+            this.accessorySprite.scale.set(0.25, 0.25);
+            this.accessorySprite.visible = true;
+        }
 
         if (this.netData.frozen && this.updateFrozenImage) {
             const frozenSprites = map.getMapDef().biome.frozenSprites || [];
