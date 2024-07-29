@@ -1,14 +1,12 @@
 import { randomBytes } from "crypto";
-import NanoTimer from "nanotimer";
 import { platform } from "os";
+import NanoTimer from "nanotimer";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
-import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
 import type { Player } from "./game/objects/player";
-import { Room } from "./teamMenu";
 import { Logger } from "./utils/logger";
 import { forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
@@ -19,19 +17,19 @@ export interface FindGameBody {
     playerCount: number;
     autoFill: boolean;
     gameModeIdx: number;
-    groupHash?: string
+    groupHash?: string;
 }
 
 export type FindGameResponse = {
     res: Array<
         | {
-            zone: string;
-            gameId: string;
-            useHttps: boolean;
-            hosts: string[];
-            addrs: string[];
-            data: string;
-        }
+              zone: string;
+              gameId: string;
+              useHttps: boolean;
+              hosts: string[];
+              addrs: string[];
+              data: string;
+          }
         | { err: string }
     >;
 };
@@ -98,7 +96,7 @@ export class GameServer {
              * Upgrade the connection to WebSocket.
              */
             upgrade(res, req, context) {
-                res.onAborted((): void => { });
+                res.onAborted((): void => {});
 
                 const searchParams = new URLSearchParams(req.getQuery());
                 const gameID = server.validateGameId(searchParams);
@@ -222,12 +220,13 @@ export class GameServer {
                 if (mode.teamMode > 1) {
                     let group: Group | undefined;
                     const groupsArray = [...game.groups.values()];
-                    let groupAlreadyExist = groupsArray.find(group => group.hash === body.groupHash);
+                    let groupAlreadyExist = groupsArray.find(
+                        (group) => group.hash === body.groupHash
+                    );
 
                     if (groupAlreadyExist) {
                         response.data = body.groupHash!;
                     } else {
-
                         if (body.autoFill) {
                             const groups = groupsArray.filter((group) => {
                                 let autoFill = group.autoFill;
@@ -343,9 +342,9 @@ if (process.argv.includes("--game-server")) {
 
     const app = Config.gameServer.ssl
         ? SSLApp({
-            key_file_name: Config.gameServer.ssl.keyFile,
-            cert_file_name: Config.gameServer.ssl.certFile
-        })
+              key_file_name: Config.gameServer.ssl.keyFile,
+              cert_file_name: Config.gameServer.ssl.certFile
+          })
         : App();
 
     server.init(app);

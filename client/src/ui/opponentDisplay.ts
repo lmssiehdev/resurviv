@@ -63,7 +63,7 @@ export class LoadoutDisplay {
         public config: ConfigManager,
         public inputBinds: InputBinds,
         public account: Account
-    ) {}
+    ) { }
 
     init() {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
@@ -260,8 +260,8 @@ export class LoadoutDisplay {
         const obj = {
             outfit: this.loadout.outfit,
             backpack: "backpack03",
-            helmet: "helmet03",
-            chest: "chest03",
+            helmet: "",
+            chest: "",
             activeWeapon:
                 this.view === "secondary" ? this.loadout.secondary : this.loadout.primary,
             layer: 0,
@@ -386,9 +386,9 @@ export class LoadoutDisplay {
             (this.view == this.viewOld ||
                 (this.view != "heal" && this.view != "boost") ||
                 (this.animIdleTicker = 0),
-            (this.viewOld = this.view),
-            (this.animIdleTicker -= dt),
-            this.animIdleTicker < 0)
+                (this.viewOld = this.view),
+                (this.animIdleTicker -= dt),
+                this.animIdleTicker < 0)
         ) {
             if (this.view == "heal") {
                 this.actionSeq = (this.actionSeq + 1) % 8;

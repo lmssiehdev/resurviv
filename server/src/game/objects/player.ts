@@ -583,20 +583,6 @@ export class Player extends BaseGameObject {
             this.outfit = defaultItems.outfit;
         }
 
-        if (isItemInLoadout(joinMsg.loadout.primary, "gun")) {
-            const slot = GameConfig.WeaponSlot.Primary;
-            this.weapons[slot].type = joinMsg.loadout.primary;
-            const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
-            this.weapons[slot].ammo = gunDef.maxClip;
-        }
-
-        if (isItemInLoadout(joinMsg.loadout.secondary, "gun")) {
-            const slot = GameConfig.WeaponSlot.Secondary;
-            this.weapons[slot].type = joinMsg.loadout.secondary;
-            const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
-            this.weapons[slot].ammo = gunDef.maxClip;
-        }
-
         if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
             this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
         }
@@ -646,6 +632,20 @@ export class Player extends BaseGameObject {
                 ammo: weap.ammo ?? 0,
                 cooldown: 0
             };
+        }
+
+        if (isItemInLoadout(joinMsg.loadout.primary, "gun")) {
+            const slot = GameConfig.WeaponSlot.Primary;
+            this.weapons[slot].type = joinMsg.loadout.primary;
+            const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
+            this.weapons[slot].ammo = gunDef.maxClip;
+        }
+
+        if (isItemInLoadout(joinMsg.loadout.secondary, "gun")) {
+            const slot = GameConfig.WeaponSlot.Secondary;
+            this.weapons[slot].type = joinMsg.loadout.secondary;
+            const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
+            this.weapons[slot].ammo = gunDef.maxClip;
         }
 
         for (const key in GameConfig.bagSizes) {

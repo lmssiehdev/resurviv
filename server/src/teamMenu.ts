@@ -62,7 +62,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: ApiServer) { }
+    constructor(public server: ApiServer) {}
 
     init(app: TemplatedApp) {
         const teamMenu = this;
@@ -73,7 +73,7 @@ export class TeamMenu {
              * Upgrade the connection to WebSocket.
              */
             upgrade(res, req, context) {
-                res.onAborted((): void => { });
+                res.onAborted((): void => {});
 
                 res.upgrade(
                     {},

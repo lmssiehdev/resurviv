@@ -1,5 +1,5 @@
 import { defineSkin } from "../../utils/util";
-import { Vec2 } from "../../utils/v2";
+import type { Vec2 } from "../../utils/v2";
 
 export interface OutfitDef {
     readonly type: "outfit";
@@ -33,10 +33,10 @@ export interface OutfitDef {
     baseScale?: number;
     ghillie?: boolean;
     accessory?: {
-        sprite: string,
-        anchor: Vec2,
-        topUI?: number
-    }
+        sprite: string;
+        anchor: Vec2;
+        topUI?: number;
+    };
 }
 
 function defineOutfitSkin(baseType: string, params: any) {
@@ -109,42 +109,6 @@ const SkinDefs: Record<string, OutfitDef> = {
         lore: "",
         accessory: {
             sprite: "player-accessory-outfitFireball.img",
-            anchor: {
-                x: 0.6,
-                y: 0.5
-            },
-            topUI: 55
-        }
-    },
-    outfitSpeedoSunburn: {
-        name: "Mecha",
-        type: "outfit",
-        skinImg: {
-            baseTint: 16777215,
-            baseSprite: "player-base-mecha.img",
-            handTint: 16777215,
-            handSprite: "player-hands-outfitMecha.img",
-            footTint: 5996250,
-            footSprite: "player-feet-01.img",
-            backpackTint: 16777215,
-            backpackSprite: "player-back-mecha.img"
-        },
-        lootImg: {
-            sprite: "loot-shirt-outfitMecha.img",
-            tint: 16777215,
-            border: "loot-circle-outer-01.img",
-            borderTint: 0,
-            scale: 0.2
-        },
-        sound: {
-            pickup: "clothes_pickup_01"
-        },
-        baseType: "outfitBase",
-        noDropOnDeath: true,
-        rarity: 5,
-        lore: "",
-        accessory: {
-            sprite: "player-accessory-outfitMecha.img",
             anchor: {
                 x: 0.6,
                 y: 0.5
