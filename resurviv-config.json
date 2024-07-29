@@ -1,0 +1,33 @@
+{
+    "modes": [
+        {
+            "mapName": "main",
+            "teamMode": 1,
+            "enabled": false
+        },
+        {
+            "mapName": "main",
+            "teamMode": 2,
+            "enabled": true
+        },
+        {
+            "mapName": "main",
+            "teamMode": 4,
+            "enabled": false
+        }
+    ],
+    "gameConfig": {
+        "gas": {
+            "initWaitTime": 300,
+            "damageTickRate": 1,
+            "damage": [
+                25,
+                70
+            ],
+            "widthDecay": 0.3
+        },
+        "gun": {
+            "customSwitchDelay": 0.2
+        }
+    }
+}

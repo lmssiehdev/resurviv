@@ -114,6 +114,8 @@ export class Gas {
 
     doDamage = false;
 
+    closeZoneNext!: boolean;
+
     constructor(readonly map: GameMap) {
         const mapSize = (map.width + map.height) / 2;
 
@@ -161,7 +163,7 @@ export class Gas {
             if (this.radNew > 0) {
                 this.radNew = this.currentRad * GameConfig.gas.widthDecay;
 
-                if (this.radNew < GameConfig.gas.widthMin) {
+                if (this.radNew < GameConfig.gas.widthMin || this.closeZoneNext) {
                     this.radNew = 0;
                 }
 
@@ -218,6 +220,7 @@ export class Gas {
         this._gasTicker = 0;
         this.dirty = true;
         this.timeDirty = true;
+        this.closeZoneNext = true;
     }
 
     isInGas(pos: Vec2) {
