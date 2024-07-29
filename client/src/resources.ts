@@ -179,7 +179,7 @@ export class ResourceManager {
         // Textures
         //
         const atlasList =
-            ["main", "shared", "loadout", "loadout2", "gradient"] ??
+            ["main", "shared", "loadout", "loadout2", "gradient"] as Atlas[] ??
             mapDef.assets.atlases;
 
         // Unload all atlases that aren't in the new list

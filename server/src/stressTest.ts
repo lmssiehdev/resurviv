@@ -278,6 +278,8 @@ class Bot {
             outfit: outfits[util.randomInt(0, outfits.length - 1)],
             heal: "heal_basic",
             boost: "boost_basic",
+            primary: "",
+            secondary: "",
             emotes: this.emotes
         };
         this.sendMsg(net.MsgType.Join, joinMsg);
