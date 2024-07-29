@@ -24,6 +24,7 @@ interface RoomPlayer extends TeamMenuPlayer {
 export interface Room {
     roomData: RoomData;
     players: RoomPlayer[];
+    groupHash?: string;
 }
 
 type ErrorType =
@@ -61,7 +62,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: ApiServer) {}
+    constructor(public server: ApiServer) { }
 
     init(app: TemplatedApp) {
         const teamMenu = this;
@@ -72,7 +73,7 @@ export class TeamMenu {
              * Upgrade the connection to WebSocket.
              */
             upgrade(res, req, context) {
-                res.onAborted((): void => {});
+                res.onAborted((): void => { });
 
                 res.upgrade(
                     {},
@@ -363,9 +364,9 @@ export class TeamMenu {
                     (p) => p.socketData === localPlayerData
                 )!;
 
-                if (!player.isLeader) {
-                    return;
-                }
+                // if (!player.isLeader) {
+                //     return;
+                // }
 
                 room.roomData.findingGame = true;
                 this.sendRoomState(room);
@@ -378,7 +379,8 @@ export class TeamMenu {
                         zones: data.zones,
                         gameModeIdx: room.roomData.gameModeIdx,
                         autoFill: room.roomData.autoFill,
-                        playerCount: room.players.length
+                        playerCount: room.players.length,
+                        groupHash: room.groupHash
                     })
                 ).res[0];
 
@@ -388,6 +390,8 @@ export class TeamMenu {
                     return;
                 }
 
+                room.groupHash = playData.data;
+
                 response = {
                     type: "joinGame",
                     data: {
@@ -395,11 +399,14 @@ export class TeamMenu {
                         data: playData.data
                     }
                 };
-                this.sendResponses(response, room.players);
+                // this.sendResponses(response, room.players);
+                // room.players.forEach((p) => {
+                //     p.inGame = true;
+                // });
 
-                room.players.forEach((p) => {
-                    p.inGame = true;
-                });
+                this.sendResponse(response, player);
+                player.inGame = true;
+                room.roomData.findingGame = false;
                 this.sendRoomState(room);
                 break;
             }

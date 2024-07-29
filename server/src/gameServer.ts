@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
-import { platform } from "os";
 import NanoTimer from "nanotimer";
+import { platform } from "os";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
 import { GameConfig } from "../../shared/gameConfig";
@@ -8,6 +8,7 @@ import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
 import type { Player } from "./game/objects/player";
+import { Room } from "./teamMenu";
 import { Logger } from "./utils/logger";
 import { forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
@@ -18,18 +19,19 @@ export interface FindGameBody {
     playerCount: number;
     autoFill: boolean;
     gameModeIdx: number;
+    groupHash?: string
 }
 
 export type FindGameResponse = {
     res: Array<
         | {
-              zone: string;
-              gameId: string;
-              useHttps: boolean;
-              hosts: string[];
-              addrs: string[];
-              data: string;
-          }
+            zone: string;
+            gameId: string;
+            useHttps: boolean;
+            hosts: string[];
+            addrs: string[];
+            data: string;
+        }
         | { err: string }
     >;
 };
@@ -96,7 +98,7 @@ export class GameServer {
              * Upgrade the connection to WebSocket.
              */
             upgrade(res, req, context) {
-                res.onAborted((): void => {});
+                res.onAborted((): void => { });
 
                 const searchParams = new URLSearchParams(req.getQuery());
                 const gameID = server.validateGameId(searchParams);
@@ -219,22 +221,32 @@ export class GameServer {
                 const mode = Config.modes[body.gameModeIdx];
                 if (mode.teamMode > 1) {
                     let group: Group | undefined;
+                    const groupsArray = [...game.groups.values()];
+                    let groupAlreadyExist = groupsArray.find(group => group.hash === body.groupHash);
 
-                    if (body.autoFill) {
-                        group = [...game.groups.values()].filter((group) => {
-                            return group.autoFill && group.players.length < mode.teamMode;
-                        })[0];
-                    }
+                    if (groupAlreadyExist) {
+                        response.data = body.groupHash!;
+                    } else {
 
-                    if (!group) {
-                        group = game.addGroup(
-                            randomBytes(20).toString("hex"),
-                            body.autoFill
-                        );
-                    }
+                        if (body.autoFill) {
+                            const groups = groupsArray.filter((group) => {
+                                let autoFill = group.autoFill;
+                                if (game.groups.size < 2) autoFill = false;
+                                return autoFill && group.players.length < mode.teamMode;
+                            });
+                            group = groups[Math.floor(Math.random() * groups.length)];
+                        }
 
-                    if (group) {
-                        response.data = group.hash;
+                        if (!group) {
+                            group = game.addGroup(
+                                randomBytes(20).toString("hex"),
+                                body.autoFill
+                            );
+                        }
+
+                        if (group) {
+                            response.data = group.hash;
+                        }
                     }
                 }
             }
@@ -288,9 +300,10 @@ export class GameServer {
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
         if (player.group) player.group.checkPlayers();
-        if (player.timeAlive < GameConfig.player.minActiveTime) {
-            player.game.playerBarn.removePlayer(player);
-        }
+        // @NOTE: we always remove the player when he leaves
+        // if (player.timeAlive < GameConfig.player.minActiveTime) {
+        player.game.playerBarn.removePlayer(player);
+        // }
     }
 
     getPlayerCount() {
@@ -330,9 +343,9 @@ if (process.argv.includes("--game-server")) {
 
     const app = Config.gameServer.ssl
         ? SSLApp({
-              key_file_name: Config.gameServer.ssl.keyFile,
-              cert_file_name: Config.gameServer.ssl.certFile
-          })
+            key_file_name: Config.gameServer.ssl.keyFile,
+            cert_file_name: Config.gameServer.ssl.certFile
+        })
         : App();
 
     server.init(app);
