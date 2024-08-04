@@ -33,6 +33,7 @@ export interface FindGameBody {
     playerCount: number;
     autoFill: boolean;
     gameModeIdx: number;
+    groupHash?: string;
 }
 
 export class Server {
@@ -110,13 +111,13 @@ export class Server {
     async findGame(body: FindGameBody) {
         let response:
             | {
-                  zone: string;
-                  gameId: string;
-                  useHttps: boolean;
-                  hosts: string[];
-                  addrs: string[];
-                  data: string;
-              }
+                zone: string;
+                gameId: string;
+                useHttps: boolean;
+                hosts: string[];
+                addrs: string[];
+                data: string;
+            }
             | { err: string } = {
             zone: "",
             data: "",
@@ -162,23 +163,35 @@ export class Server {
                 const mode = Config.modes[body.gameModeIdx];
                 if (mode.teamMode > 1) {
                     let group: Group | undefined;
+                    const groupsArray = [...game.groups.values()];
+                    let groupAlreadyExist = groupsArray.find(
+                        (group) => group.hash === body.groupHash
+                    );
 
-                    if (body.autoFill) {
-                        group = [...game.groups.values()].filter((group) => {
-                            return group.autoFill && group.players.length < mode.teamMode;
-                        })[0];
+                    if (groupAlreadyExist) {
+                        response.data = body.groupHash!;
+                    } else {
+
+                        if (body.autoFill) {
+                            group = groupsArray.filter((group) => {
+                                let autoFill = group.autoFill;
+                                if (game.groups.size < 2) autoFill = false;
+                                return autoFill && group.players.length < mode.teamMode;
+                            })[0];
+                        }
+
+                        if (!group) {
+                            group = game.addGroup(
+                                randomBytes(20).toString("hex"),
+                                body.autoFill
+                            );
+                        }
+
+                        if (group) {
+                            response.data = group.hash;
+                        }
                     }
 
-                    if (!group) {
-                        group = game.addGroup(
-                            randomBytes(20).toString("hex"),
-                            body.autoFill
-                        );
-                    }
-
-                    if (group) {
-                        response.data = group.hash;
-                    }
                 }
             }
         } else {
@@ -231,9 +244,10 @@ export class Server {
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
         if (player.group) player.group.checkPlayers();
-        if (player.timeAlive < GameConfig.player.minActiveTime) {
-            player.game.playerBarn.removePlayer(player);
-        }
+        // @NOTE: always remove the player once disconnected
+        // if (player.timeAlive < GameConfig.player.minActiveTime) {
+        player.game.playerBarn.removePlayer(player);
+        // }
     }
 }
 
@@ -241,9 +255,9 @@ const server = new Server();
 
 const app = Config.ssl
     ? SSLApp({
-          key_file_name: Config.ssl.keyFile,
-          cert_file_name: Config.ssl.certFile
-      })
+        key_file_name: Config.ssl.keyFile,
+        cert_file_name: Config.ssl.certFile
+    })
     : App();
 
 app.get("/api/site_info", (res) => {
@@ -299,7 +313,7 @@ app.ws("/play", {
      * Upgrade the connection to WebSocket.
      */
     upgrade(res, req, context) {
-        res.onAborted((): void => {});
+        res.onAborted((): void => { });
 
         const searchParams = new URLSearchParams(req.getQuery());
         const gameID = server.validateGameId(searchParams);
@@ -356,7 +370,7 @@ app.ws("/team_v2", {
      * Upgrade the connection to WebSocket.
      */
     upgrade(res, req, context) {
-        res.onAborted((): void => {});
+        res.onAborted((): void => { });
 
         res.upgrade(
             {},

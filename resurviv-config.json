@@ -28,6 +28,36 @@
         },
         "gun": {
             "customSwitchDelay": 0.2
+        },
+        "player": {
+            "defaultItems": {
+                "backpack": "backpack03",
+                "helmet": "helmet03",
+                "chest": "chest03",
+                "scope": "4xscope",
+                "perks": [
+                    {
+                        "type": "endless_ammo",
+                        "droppable": false
+                    },
+                    {
+                        "type": "takedown",
+                        "droppable": false
+                    }
+                ],
+                "inventory": {
+                    "frag": 3,
+                    "smoke": 1,
+                    "mirv": 1,
+                    "bandage": 15,
+                    "healthkit": 2,
+                    "soda": 4,
+                    "painkiller": 1,
+                    "1xscope": 1,
+                    "2xscope": 1,
+                    "4xscope": 1
+                }
+            }
         }
     }
 }

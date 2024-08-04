@@ -71,7 +71,7 @@ export abstract class GamePlugin {
 export class PluginManager {
     private readonly _plugins = new Set<GamePlugin>();
 
-    constructor(readonly game: Game) {}
+    constructor(readonly game: Game) { }
 
     emit<E extends keyof EventMap>(eventName: E, data: EventMap[E]): void {
         for (const plugin of this._plugins) {

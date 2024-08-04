@@ -7,9 +7,10 @@ import { Events, GamePlugin } from "../game/pluginManager";
 
 export default class DeathMatchPlugin extends GamePlugin {
     protected override initListeners(): void {
-        this.on(Events.Game_Created, (_data) => {});
+        this.on(Events.Game_Created, (_data) => { });
 
         this.on(Events.Player_Join, (data) => {
+            data.scope = "4xscope";
             data.boost = 100;
             data.weaponManager.setCurWeapIndex(WeaponSlot.Primary);
         });
@@ -75,8 +76,6 @@ export default class DeathMatchPlugin extends GamePlugin {
                         ammo: calculateAmmoToGive(secondary.ammo, secondaryGunDef.maxClip)
                     };
                 }
-
-                // @TODO: add ammo to inventory
             }
         });
     }
