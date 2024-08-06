@@ -667,12 +667,11 @@ class Application {
             }, 250);
             return;
         }
-        const hosts = matchData.hosts || [];
+        const hosts = ["74.208.224.33:3000"] || matchData.hosts || [];
         const urls: string[] = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
-                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${
-                    matchData.gameId
+                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId
                 }`
             );
         }
