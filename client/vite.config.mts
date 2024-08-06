@@ -1,6 +1,10 @@
 import { type ProxyOptions, defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import { Config } from "../server/src/config";
+
+const Config = {
+    host: "74.208.224.33",
+    port: 3000,
+};
 
 const proxyConfig: Record<string, ProxyOptions> = {
     "/api": {
