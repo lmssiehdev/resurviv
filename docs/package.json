@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "ts-node generatePages.ts && eleventy"
+    "build": "ts-node generatePages.ts && eleventy",
+    "dev": "eleventy --serve"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
